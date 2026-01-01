@@ -16,6 +16,9 @@
     <header class="header">
       <div class="logo">kkongchi.app</div>
       <nav class="nav">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <span class="theme-icon"></span>
+        </button>
         <a class="nav-link" href="mailto:kkongchi@gmail.com">Contact</a>
         <a class="nav-link" href="https://github.com/kongsungeui" target="_blank" rel="noreferrer">GitHub</a>
       </nav>
@@ -80,6 +83,55 @@
 
   <script>
     document.querySelector('.year').textContent = new Date().getFullYear();
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.querySelector('.theme-icon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to system preference
+    function getInitialTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        return savedTheme;
+      }
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+
+    // Update theme icon
+    function updateThemeIcon(theme) {
+      themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+    }
+
+    // Apply theme
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        html.setAttribute('data-theme', 'light');
+      } else {
+        html.removeAttribute('data-theme');
+      }
+      updateThemeIcon(theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    // Initialize theme
+    const initialTheme = getInitialTheme();
+    applyTheme(initialTheme);
+
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      applyTheme(newTheme);
+    });
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'light' : 'dark');
+      }
+    });
   </script>
 </body>
 </html>
